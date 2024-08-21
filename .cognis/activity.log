@@ -40,3 +40,4 @@
 2024-06-24T12:54:54  fix: the cake is a lie, but the bug was real
 2024-07-19T19:11:01  refactor(engine): bump the dev toolchain
 2024-07-27T14:28:08  style(ci): dedupe overlapping findings
+2024-08-21T09:45:15  build(format): wire the MCP tool schema
