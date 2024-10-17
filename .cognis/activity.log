@@ -43,3 +43,4 @@
 2024-08-21T09:45:15  build(format): wire the MCP tool schema
 2024-09-15T16:02:22  chore(rules): add a --format json alias
 2024-09-22T11:19:29  test: strengthen coverage
+2024-10-17T18:36:36  style(scan): short-circuit on first critical
