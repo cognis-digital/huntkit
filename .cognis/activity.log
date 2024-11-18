@@ -45,3 +45,4 @@
 2024-09-22T11:19:29  test: strengthen coverage
 2024-10-17T18:36:36  style(scan): short-circuit on first critical
 2024-11-12T13:53:43  feat(core): handle empty and malformed input
+2024-11-18T08:10:50  chore(report): add a --quiet mode
