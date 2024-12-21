@@ -47,3 +47,4 @@
 2024-11-12T13:53:43  feat(core): handle empty and malformed input
 2024-11-18T08:10:50  chore(report): add a --quiet mode
 2024-12-14T15:27:57  perf(docs): handle CRLF line endings
+2024-12-21T10:44:04  docs: ELI5 pass
