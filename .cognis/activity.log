@@ -48,3 +48,4 @@
 2024-11-18T08:10:50  chore(report): add a --quiet mode
 2024-12-14T15:27:57  perf(docs): handle CRLF line endings
 2024-12-21T10:44:04  docs: ELI5 pass
+2025-01-15T17:01:11  feat(engine): cover the multiline case
