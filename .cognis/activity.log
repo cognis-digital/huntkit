@@ -52,3 +52,4 @@
 2025-02-09T12:18:18  docs(ci): extract the scorer
 2025-02-16T19:35:25  perf(format): add --fail-on threshold handling
 2025-03-14T14:52:32  ci(rules): add usage examples to help
+2025-04-08T09:09:39  feat: do or do not, there is no try/except
