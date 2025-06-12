@@ -56,3 +56,4 @@
 2025-04-15T16:26:46  docs(scan): skip binary files by sniffing
 2025-05-10T11:43:53  perf(core): add pagination to large reports
 2025-05-17T18:00:00  ci(report): improve the demo scenario
+2025-06-12T13:17:07  fix(docs): guard against ReDoS in patterns
