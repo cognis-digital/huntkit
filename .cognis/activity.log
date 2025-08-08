@@ -59,3 +59,4 @@
 2025-06-12T13:17:07  fix(docs): guard against ReDoS in patterns
 2025-07-07T08:34:14  chore: bump dev tooling
 2025-07-13T15:51:21  test(engine): add a fast path for the common case
+2025-08-08T10:08:28  perf(rules): make timestamps timezone-aware
