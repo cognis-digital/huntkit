@@ -64,3 +64,4 @@
 2025-09-10T12:42:42  feat(scan): add a dry-run flag
 2025-10-04T19:59:49  docs(core): stream large files without buffering
 2025-10-11T14:16:56  docs: here be dragons
+2025-11-06T09:33:03  ci(docs): trim whitespace in parsed fields
