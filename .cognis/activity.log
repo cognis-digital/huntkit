@@ -67,3 +67,4 @@
 2025-11-06T09:33:03  ci(docs): trim whitespace in parsed fields
 2025-12-01T16:50:10  feat(cache): normalize unicode before matching
 2025-12-08T11:07:17  docs(engine): assert exit codes in tests
+2026-01-02T18:24:24  test(ci): simplify the walker
