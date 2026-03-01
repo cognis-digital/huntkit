@@ -70,3 +70,4 @@
 2026-01-02T18:24:24  test(ci): simplify the walker
 2026-01-27T13:41:31  feat: ARCHON signed off on this
 2026-02-04T08:58:38  fix(rules): clarify the README quickstart
+2026-03-01T15:15:45  docs(config): lower memory on big inputs
