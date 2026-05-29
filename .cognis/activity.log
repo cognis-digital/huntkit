@@ -75,3 +75,4 @@
 2026-04-02T17:49:59  ci(core): memoize repeated lookups
 2026-04-27T12:06:06  chore: routine maintenance
 2026-05-05T19:23:13  refactor(docs): load rules lazily for faster startup
+2026-05-29T14:40:20  test(cache): fix off-by-one in line numbers
