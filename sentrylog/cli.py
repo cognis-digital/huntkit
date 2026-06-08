@@ -1,13 +1,17 @@
-"""Command-line interface for SENTRYLOG.
+"""SENTRYLOG command-line interface.
 
 Subcommands:
-  scan    Ingest log files and run detection rules, emit matches.
-  rules   List the active rule pack.
-  ingest  Normalize logs and emit parsed events (debug/triage).
+    scan <events>     run the rule pack against a log file (exit 1 on findings)
+    rules             list the bundled detection rules
+    rule <id>         show one rule in detail
+    summary <events>  per-trace rollup of findings
 
 Global: --version, --format {table,json}
-Exit codes: 0 = clean (no matches), 1 = matches found / error.
+
+Event files may be JSON arrays, JSON-lines, or CSV. Use '-' to read stdin.
+Custom rule packs (same Sigma-style YAML dialect) may be supplied via --rules.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -17,141 +21,211 @@ from typing import List, Optional
 
 from . import TOOL_NAME, TOOL_VERSION
 from .core import (
-    BUILTIN_RULES,
-    detect,
-    ingest_lines,
-    load_rules_text,
+    Finding,
+    Rule,
+    load_events,
+    load_rules,
+    scan,
+    severity_rank,
+    summarize_findings,
 )
 
 
-def _read_inputs(paths: List[str]):
-    events = []
-    if not paths or paths == ["-"]:
-        events.extend(ingest_lines(sys.stdin.read().splitlines(), source="<stdin>"))
-        return events
-    for p in paths:
-        with open(p, "r", encoding="utf-8", errors="replace") as fh:
-            events.extend(ingest_lines(fh, source=p))
-    return events
+def _read(path: str) -> str:
+    if path == "-":
+        return sys.stdin.read()
+    with open(path, "r", encoding="utf-8") as fh:
+        return fh.read()
 
 
-def _print(obj, fmt: str) -> None:
-    if fmt == "json":
-        print(json.dumps(obj, indent=2, default=str))
+def _emit_json(obj) -> None:
+    print(json.dumps(obj, indent=2, default=str))
+
+
+def _get_rules(args) -> List[Rule]:
+    text = _read(args.rules) if getattr(args, "rules", None) else None
+    rules = load_rules(text)
+    if getattr(args, "level", None):
+        floor = {"critical": 4, "high": 3, "medium": 2, "low": 1, "informational": 0}[args.level]
+        rules = [r for r in rules if severity_rank(r.level) >= floor]
+    return rules
+
+
+# --------------------------------------------------------------------------- #
+# Table renderers
+# --------------------------------------------------------------------------- #
+def _print_rules_table(rules: List[Rule]) -> None:
+    print(f"{len(rules)} rules loaded")
+    width = max((len(r.id) for r in rules), default=4)
+    for r in sorted(rules, key=lambda x: (-severity_rank(x.level), x.id)):
+        print(f"  [{r.level:<8}] {r.id:<{width}}  {r.mitre:<11}  {r.title}")
+
+
+def _print_rule_detail(rule: Rule) -> None:
+    print(f"id:          {rule.id}")
+    print(f"title:       {rule.title}")
+    print(f"level:       {rule.level}")
+    print(f"logsource:   {rule.logsource}")
+    print(f"mitre:       {rule.mitre}")
+    print(f"description: {rule.description}")
+    print(f"condition:   {rule.condition}")
+    print("detection:")
+    for name, sel in rule.detection.items():
+        print(f"  {name}: {json.dumps(sel)}")
+
+
+def _print_findings_table(findings: List[Finding]) -> None:
+    if not findings:
+        print("no findings")
+        return
+    findings = sorted(findings, key=lambda f: (-severity_rank(f.level), f.event_index))
+    print(f"{len(findings)} findings")
+    for f in findings:
+        marker = {"critical": "!!", "high": "! ", "medium": "* ", "low": ". "}.get(f.level, "  ")
+        ev = f.event
+        ctx = ev.get("CommandLine") or ev.get("request") or ev.get("message") \
+            or ev.get("eventName") or ev.get("Image")
+        if not ctx and ev.get("dst_ip"):
+            ctx = f"{ev.get('src_ip', '?')} -> {ev.get('dst_ip')}:{ev.get('dst_port', '?')}/{ev.get('proto', '')}"
+        ctx = str(ctx or json.dumps(ev))
+        if len(ctx) > 88:
+            ctx = ctx[:85] + "..."
+        print(f"  {marker}[{f.level:<8}] {f.mitre:<11} {f.title}")
+        print(f"       event #{f.event_index}: {ctx}")
+
+
+def _print_summary_table(summary: dict) -> None:
+    print(f"total findings: {summary['total_findings']}")
+    print(f"max severity:   {summary['max_severity']}")
+    if summary["by_level"]:
+        print("by level:")
+        for k, v in summary["by_level"].items():
+            print(f"  {k:<12} {v}")
+    if summary["by_technique"]:
+        print("by MITRE technique:")
+        for k, v in summary["by_technique"].items():
+            print(f"  {k:<12} {v}")
+    if summary["by_rule"]:
+        print("by rule:")
+        for k, v in summary["by_rule"].items():
+            print(f"  {k:<28} {v}")
+
+
+# --------------------------------------------------------------------------- #
+# Subcommand handlers
+# --------------------------------------------------------------------------- #
+def _cmd_rules(args) -> int:
+    rules = _get_rules(args)
+    if args.format == "json":
+        _emit_json([{
+            "id": r.id, "title": r.title, "level": r.level,
+            "logsource": r.logsource, "mitre": r.mitre,
+            "description": r.description,
+        } for r in rules])
+    else:
+        _print_rules_table(rules)
+    return 0
+
+
+def _cmd_rule(args) -> int:
+    rules = _get_rules(args)
+    match = next((r for r in rules if r.id == args.id), None)
+    if match is None:
+        print(f"no rule with id '{args.id}'", file=sys.stderr)
+        return 2
+    if args.format == "json":
+        _emit_json({
+            "id": match.id, "title": match.title, "level": match.level,
+            "logsource": match.logsource, "mitre": match.mitre,
+            "description": match.description, "condition": match.condition,
+            "detection": match.detection,
+        })
+    else:
+        _print_rule_detail(match)
+    return 0
 
 
 def _cmd_scan(args) -> int:
-    rules = list(BUILTIN_RULES)
-    if args.rules:
-        with open(args.rules, "r", encoding="utf-8") as fh:
-            rules = load_rules_text(fh.read())
-    events = _read_inputs(args.files)
-    matches = detect(events, rules)
-    if args.level:
-        order = {"low": 0, "medium": 1, "high": 2, "critical": 3}
-        floor = order.get(args.level, 0)
-        matches = [m for m in matches if order.get(m.level, 0) >= floor]
-
-    payload = {
-        "tool": TOOL_NAME,
-        "version": TOOL_VERSION,
-        "events_scanned": len(events),
-        "rules_loaded": len(rules),
-        "match_count": len(matches),
-        "matches": [m.to_dict() for m in matches],
-    }
+    events = load_events(_read(args.events))
+    rules = _get_rules(args)
+    findings = scan(events, rules)
     if args.format == "json":
-        _print(payload, "json")
+        _emit_json({
+            "tool": TOOL_NAME,
+            "version": TOOL_VERSION,
+            "events_scanned": len(events),
+            "rules_evaluated": len(rules),
+            "summary": summarize_findings(findings),
+            "findings": [f.to_dict() for f in findings],
+        })
     else:
-        print(f"{TOOL_NAME} {TOOL_VERSION}  events={len(events)}  "
-              f"rules={len(rules)}  matches={len(matches)}")
-        if matches:
-            print(f"{'LEVEL':<9} {'RULE':<28} {'SRC':<16} LINE  TITLE")
-            for m in matches:
-                src = (m.source[-15:]) if m.source else "-"
-                print(f"{m.level:<9} {m.rule_id:<28} {src:<16} "
-                      f"{m.lineno:<5} {m.title}")
-        else:
-            print("no detections")
-    return 1 if matches else 0
+        print(f"scanned {len(events)} events against {len(rules)} rules")
+        _print_findings_table(findings)
+    return 1 if findings else 0
 
 
-def _cmd_rules(args) -> int:
-    rules = list(BUILTIN_RULES)
+def _cmd_summary(args) -> int:
+    events = load_events(_read(args.events))
+    rules = _get_rules(args)
+    findings = scan(events, rules)
+    summary = summarize_findings(findings)
     if args.format == "json":
-        _print(
-            [
-                {"id": r.id, "title": r.title, "level": r.level,
-                 "condition": r.condition}
-                for r in rules
-            ],
-            "json",
-        )
+        _emit_json({
+            "events_scanned": len(events),
+            "rules_evaluated": len(rules),
+            **summary,
+        })
     else:
-        print(f"{'LEVEL':<9} {'ID':<28} TITLE")
-        for r in rules:
-            print(f"{r.level:<9} {r.id:<28} {r.title}")
-    return 0
+        print(f"scanned {len(events)} events against {len(rules)} rules")
+        _print_summary_table(summary)
+    return 1 if findings else 0
 
 
-def _cmd_ingest(args) -> int:
-    events = _read_inputs(args.files)
-    if args.format == "json":
-        _print(
-            [
-                {"source": e.source, "lineno": e.lineno, "fields": e.fields}
-                for e in events
-            ],
-            "json",
-        )
-    else:
-        for e in events:
-            lt = e.fields.get("_logtype", "?")
-            print(f"{e.lineno:<5} [{lt}] {e.fields}")
-    return 0
-
-
+# --------------------------------------------------------------------------- #
+# Parser
+# --------------------------------------------------------------------------- #
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog=TOOL_NAME,
-        description="Single-file SIEM: Sigma-style rules + multi-source ingest.",
+        description="Sigma-style detection engine over JSON/CSV logs (MITRE ATT&CK mapped).",
     )
-    p.add_argument("--version", action="version",
-                   version=f"{TOOL_NAME} {TOOL_VERSION}")
-    p.add_argument("--format", choices=["table", "json"], default="table")
-    sub = p.add_subparsers(dest="cmd", required=True)
+    p.add_argument("--version", action="version", version=f"{TOOL_NAME} {TOOL_VERSION}")
+    p.add_argument("--format", choices=["table", "json"], default="table",
+                   help="output format (default: table)")
+    sub = p.add_subparsers(dest="command", required=True)
 
-    sp = sub.add_parser("scan", help="run detection rules over logs")
-    sp.add_argument("files", nargs="*", help="log files ('-' or none = stdin)")
-    sp.add_argument("--rules", help="path to a JSON rule pack (overrides built-ins)")
-    sp.add_argument("--level", choices=["low", "medium", "high", "critical"],
-                    help="minimum severity to report")
-    sp.set_defaults(func=_cmd_scan)
+    def add_rule_opts(sp):
+        sp.add_argument("--rules", help="path to a custom Sigma-style rule pack (YAML)")
+        sp.add_argument("--level", choices=["critical", "high", "medium", "low", "informational"],
+                        help="only use rules at this severity or higher")
 
-    rp = sub.add_parser("rules", help="list the active rule pack")
-    rp.set_defaults(func=_cmd_rules)
+    sp_scan = sub.add_parser("scan", help="run rules against a log file")
+    sp_scan.add_argument("events", help="JSON/JSON-lines/CSV log file ('-' for stdin)")
+    add_rule_opts(sp_scan)
+    sp_scan.set_defaults(func=_cmd_scan)
 
-    ip = sub.add_parser("ingest", help="normalize logs and emit parsed events")
-    ip.add_argument("files", nargs="*", help="log files ('-' or none = stdin)")
-    ip.set_defaults(func=_cmd_ingest)
+    sp_sum = sub.add_parser("summary", help="rollup of findings by technique/level")
+    sp_sum.add_argument("events", help="JSON/JSON-lines/CSV log file ('-' for stdin)")
+    add_rule_opts(sp_sum)
+    sp_sum.set_defaults(func=_cmd_summary)
+
+    sp_rules = sub.add_parser("rules", help="list bundled detection rules")
+    add_rule_opts(sp_rules)
+    sp_rules.set_defaults(func=_cmd_rules)
+
+    sp_rule = sub.add_parser("rule", help="show one rule in detail")
+    sp_rule.add_argument("id", help="rule id")
+    add_rule_opts(sp_rule)
+    sp_rule.set_defaults(func=_cmd_rule)
+
     return p
 
 
 def main(argv: Optional[List[str]] = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
-    # propagate top-level --format if subparser didn't set its own
-    if not hasattr(args, "format") or args.format is None:
-        args.format = "table"
-    try:
-        return args.func(args)
-    except FileNotFoundError as e:
-        print(f"error: {e}", file=sys.stderr)
-        return 1
-    except (ValueError, json.JSONDecodeError) as e:
-        print(f"error: {e}", file=sys.stderr)
-        return 1
+    return args.func(args)
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    sys.exit(main())
