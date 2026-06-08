@@ -1,34 +1,11 @@
-"""SENTRYLOG -- single-file SIEM for small teams.
-
-Sigma-style detection rules over multi-source log ingest (syslog, JSON
-lines, Apache/Nginx combined access logs, Windows EVTX-export JSON).
-Standard library only, zero install.
-"""
-from .core import (
-    Rule,
-    Event,
-    Match,
-    parse_rules,
-    load_rules_text,
-    ingest_text,
-    ingest_lines,
-    detect,
-    BUILTIN_RULES,
-)
-
-TOOL_NAME = "sentrylog"
-TOOL_VERSION = "1.0.0"
-
-__all__ = [
-    "Rule",
-    "Event",
-    "Match",
-    "parse_rules",
-    "load_rules_text",
-    "ingest_text",
-    "ingest_lines",
-    "detect",
-    "BUILTIN_RULES",
-    "TOOL_NAME",
-    "TOOL_VERSION",
-]
+"""sentrylog — part of the Cognis Neural Suite."""
+try:  # re-export the tool's public API + identity from core
+    from sentrylog.core import *  # noqa: F401,F403
+except Exception:  # pragma: no cover
+    pass
+try:
+    from sentrylog.core import TOOL_NAME, TOOL_VERSION
+except Exception:  # pragma: no cover
+    TOOL_NAME = "sentrylog"
+    TOOL_VERSION = "0.1.0"
+__version__ = TOOL_VERSION
