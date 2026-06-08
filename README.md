@@ -36,7 +36,11 @@ Single-file SIEM for small teams — Sigma rules + multi-source ingest — witho
 <a name="features"></a>
 ## Features
 
-- ✅ Scan
+- ✅ Load Rules Text
+- ✅ Parse Rules
+- ✅ Ingest Lines
+- ✅ Ingest Text
+- ✅ Detect
 - ✅ Runs on Linux/macOS/Windows · Docker · devcontainer
 - ✅ Ports in Python, JavaScript, Go, and Rust (`ports/`)
 
