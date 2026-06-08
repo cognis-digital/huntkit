@@ -1,0 +1,20 @@
+[
+  {
+    "event_type": "process_create",
+    "command_line": "powershell.exe -enc JABzAD0A..."
+  },
+  {
+    "event_type": "auth_fail",
+    "count": "57",
+    "user": "admin"
+  },
+  {
+    "event_type": "file_rename",
+    "old_name": "doc.docx",
+    "new_name": "doc.docx.locked"
+  },
+  {
+    "event_type": "process_create",
+    "command_line": "cmd.exe /c dir"
+  }
+]

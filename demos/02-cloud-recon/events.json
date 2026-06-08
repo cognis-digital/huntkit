@@ -1,0 +1,17 @@
+[
+  {
+    "event_type": "process_create",
+    "command_line": "aws s3 ls --recursive s3://internal-prod",
+    "host": "jump-01"
+  },
+  {
+    "event_type": "process_create",
+    "command_line": "aws iam list-users",
+    "host": "jump-01"
+  },
+  {
+    "event_type": "process_create",
+    "command_line": "kubectl get pods --all-namespaces",
+    "host": "jump-01"
+  }
+]

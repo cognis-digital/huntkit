@@ -1,0 +1,30 @@
+[
+  {
+    "event_type": "process_create",
+    "command_line": "powershell.exe -enc JABzAD0ATgBlAHcALQ...",
+    "host": "WS-ACCOUNTING-04"
+  },
+  {
+    "event_type": "auth_fail",
+    "count": "127",
+    "user": "administrator",
+    "host": "WS-ACCOUNTING-04"
+  },
+  {
+    "event_type": "process_create",
+    "command_line": "vssadmin delete shadows /all /quiet",
+    "host": "WS-ACCOUNTING-04"
+  },
+  {
+    "event_type": "file_rename",
+    "old_name": "Q3-budget.xlsx",
+    "new_name": "Q3-budget.xlsx.locked",
+    "host": "WS-ACCOUNTING-04"
+  },
+  {
+    "event_type": "file_rename",
+    "old_name": "clients.docx",
+    "new_name": "clients.docx.encrypted",
+    "host": "WS-ACCOUNTING-04"
+  }
+]
