@@ -16,7 +16,7 @@
 </div>
 
 ```bash
-pip install cognis-sentrylog
+pip install "git+https://github.com/cognis-digital/sentrylog.git"
 sentrylog scan .            # → prioritized findings in seconds
 ```
 
@@ -50,7 +50,7 @@ Single-file SIEM for small teams — Sigma rules + multi-source ingest — witho
 ## Quick start
 
 ```bash
-pip install cognis-sentrylog
+pip install "git+https://github.com/cognis-digital/sentrylog.git"
 sentrylog --version
 sentrylog scan .                       # scan current project
 sentrylog scan . --format json         # machine-readable
