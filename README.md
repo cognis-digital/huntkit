@@ -16,9 +16,15 @@
 </div>
 
 ```bash
-pip install cognis-sentrylog
+pip install "git+https://github.com/cognis-digital/sentrylog.git"
 sentrylog scan .            # → prioritized findings in seconds
 ```
+
+<!-- cognis:layman:start -->
+## What is this?
+
+sentrylog is a security monitoring tool that scans your log files for signs of attacks or suspicious activity. It comes bundled with around 25 detection rules based on real-world threat patterns — things like brute-force login attempts, SQL injection probes, PowerShell abuse, and ransomware precursors — each mapped to a MITRE ATT&CK technique so you know exactly what you're dealing with. You point it at a JSON or CSV log file and it instantly tells you what looks dangerous and how serious it is. It requires no setup beyond Python and no external dependencies, making it ideal for developers, system administrators, and small security teams who want quick, actionable threat detection without heavy SIEM infrastructure.
+<!-- cognis:layman:end -->
 
 ## Contents
 
@@ -47,10 +53,56 @@ Single-file SIEM for small teams — Sigma rules + multi-source ingest — witho
 <div align="right"><a href="#top">↑ back to top</a></div>
 
 <a name="quick-start"></a>
+<!-- cognis:domains:start -->
+## Domains
+
+**Primary domain:** Cyber & Security  ·  **JTF MERIDIAN division:** NULLBYTE · SPECTER
+
+**Topics:** `cognis` `security` `infosec` `cybersecurity` `blue-team`
+
+Part of the **Cognis Neural Suite** — 300+ source-available tools organized across 12 domains under the JTF MERIDIAN command structure. See the [suite on GitHub](https://github.com/cognis-digital) and [jtf-meridian](https://github.com/cognis-digital/jtf-meridian) for how the pieces fit together.
+<!-- cognis:domains:end -->
+
+<!-- cognis:install:start -->
+## Install
+
+`sentrylog` is source-available (not published to PyPI) — every method below installs
+straight from GitHub. Pick whichever you prefer; the one-line scripts auto-detect
+the best tool available on your machine.
+
+**One-liner (Linux / macOS):**
+```sh
+curl -fsSL https://raw.githubusercontent.com/cognis-digital/sentrylog/HEAD/install.sh | sh
+```
+
+**One-liner (Windows PowerShell):**
+```powershell
+irm https://raw.githubusercontent.com/cognis-digital/sentrylog/HEAD/install.ps1 | iex
+```
+
+**Or install manually — any one of:**
+```sh
+pipx install "git+https://github.com/cognis-digital/sentrylog.git"     # isolated (recommended)
+uv tool install "git+https://github.com/cognis-digital/sentrylog.git"  # uv
+pip install "git+https://github.com/cognis-digital/sentrylog.git"      # pip
+```
+
+**From source:**
+```sh
+git clone https://github.com/cognis-digital/sentrylog.git
+cd sentrylog && pip install .
+```
+
+Then run:
+```sh
+sentrylog --help
+```
+<!-- cognis:install:end -->
+
 ## Quick start
 
 ```bash
-pip install cognis-sentrylog
+pip install "git+https://github.com/cognis-digital/sentrylog.git"
 sentrylog --version
 sentrylog scan .                       # scan current project
 sentrylog scan . --format json         # machine-readable
