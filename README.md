@@ -20,6 +20,32 @@ pip install cognis-sentrylog
 sentrylog scan .            # → prioritized findings in seconds
 ```
 
+## Usage — step by step
+
+1. **Install** the CLI (console script `sentrylog`):
+   ```bash
+   pip install cognis-sentrylog
+   ```
+2. **Scan logs against the bundled Sigma-style rules** — `scan` accepts JSON, JSON-lines, or CSV (`-` for stdin) and exits `1` when there are findings:
+   ```bash
+   sentrylog scan events.jsonl
+   ```
+3. **Narrow the rule set / inspect rules** — filter by minimum severity, list bundled rules, or load a custom pack:
+   ```bash
+   sentrylog rules --level high
+   sentrylog rule <rule-id>
+   sentrylog scan events.jsonl --rules my_rules.yml --level medium
+   ```
+4. **Roll up and read the output** — `summary` aggregates findings by MITRE technique and level; emit JSON for a SIEM:
+   ```bash
+   sentrylog summary events.jsonl --format json | jq '.by_technique'
+   ```
+5. **Automate in CI** — gate on detections (nonzero exit = findings):
+   ```yaml
+   - run: pip install cognis-sentrylog
+   - run: sentrylog scan logs/*.jsonl --level high
+   ```
+
 ## Contents
 
 - [Why sentrylog?](#why) · [Features](#features) · [Quick start](#quick-start) · [Example](#example) · [Architecture](#architecture) · [AI stack](#ai-stack) · [How it compares](#how-it-compares) · [Integrations](#integrations) · [Install anywhere](#install-anywhere) · [Related](#related) · [Contributing](#contributing)
