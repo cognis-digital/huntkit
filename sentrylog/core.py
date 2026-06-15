@@ -611,10 +611,23 @@ def load_rules(text: Optional[str] = None) -> List[Rule]:
 # Event loading
 # --------------------------------------------------------------------------- #
 def load_events(text: str) -> List[Dict[str, Any]]:
-    """Load events from a JSON array, JSON-lines, or CSV document."""
+    """Load events from a JSON array, JSON-lines, or CSV document.
+
+    Raises ValueError with a descriptive message on malformed JSON input.
+    Returns an empty list for valid but structurally empty input.
+    """
+    if not text or not text.strip():
+        return []
     stripped = text.lstrip()
     if stripped.startswith("["):
-        data = json.loads(text)
+        try:
+            data = json.loads(text)
+        except json.JSONDecodeError as exc:
+            raise ValueError(f"malformed JSON array: {exc}") from exc
+        if not isinstance(data, list):
+            raise ValueError(
+                f"expected a JSON array, got {type(data).__name__}"
+            )
         return [d for d in data if isinstance(d, dict)]
     if stripped.startswith("{"):
         # Could be JSON-lines or a single object.
@@ -633,10 +646,16 @@ def load_events(text: str) -> List[Dict[str, Any]]:
                 events.append(obj)
         if ok and events:
             return events
-        obj = json.loads(text)
+        # Fall back to treating the whole text as a single JSON object.
+        try:
+            obj = json.loads(text)
+        except json.JSONDecodeError as exc:
+            raise ValueError(f"malformed JSON: {exc}") from exc
         return [obj] if isinstance(obj, dict) else []
-    # CSV fallback
+    # CSV fallback — DictReader is tolerant; just handle no-header edge case.
     reader = csv.DictReader(io.StringIO(text))
+    if reader.fieldnames is None:
+        return []
     return [dict(row) for row in reader]
 
 

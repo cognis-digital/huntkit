@@ -34,19 +34,49 @@ from .core import (
 def _read(path: str) -> str:
     if path == "-":
         return sys.stdin.read()
-    with open(path, "r", encoding="utf-8") as fh:
-        return fh.read()
+    try:
+        with open(path, "r", encoding="utf-8") as fh:
+            return fh.read()
+    except FileNotFoundError:
+        print(f"error: file not found: {path}", file=sys.stderr)
+        raise SystemExit(2)
+    except PermissionError:
+        print(f"error: permission denied: {path}", file=sys.stderr)
+        raise SystemExit(2)
+    except OSError as exc:
+        print(f"error: cannot read {path}: {exc}", file=sys.stderr)
+        raise SystemExit(2)
 
 
 def _emit_json(obj) -> None:
     print(json.dumps(obj, indent=2, default=str))
 
 
+_LEVEL_FLOOR = {
+    "critical": 4,
+    "high": 3,
+    "medium": 2,
+    "low": 1,
+    "informational": 0,
+}
+
+
 def _get_rules(args) -> List[Rule]:
-    text = _read(args.rules) if getattr(args, "rules", None) else None
-    rules = load_rules(text)
+    rules_text: Optional[str] = None
+    if getattr(args, "rules", None):
+        rules_text = _read(args.rules)
+        if not rules_text.strip():
+            print(
+                f"error: rules file is empty: {args.rules}", file=sys.stderr
+            )
+            raise SystemExit(2)
+    rules = load_rules(rules_text)
+    if not rules:
+        print("error: no rules loaded — rule pack produced zero valid rules",
+              file=sys.stderr)
+        raise SystemExit(2)
     if getattr(args, "level", None):
-        floor = {"critical": 4, "high": 3, "medium": 2, "low": 1, "informational": 0}[args.level]
+        floor = _LEVEL_FLOOR.get(args.level, 0)
         rules = [r for r in rules if severity_rank(r.level) >= floor]
     return rules
 
@@ -146,7 +176,17 @@ def _cmd_rule(args) -> int:
 
 
 def _cmd_scan(args) -> int:
-    events = load_events(_read(args.events))
+    raw = _read(args.events)
+    if not raw.strip():
+        print("error: events file is empty", file=sys.stderr)
+        return 2
+    try:
+        events = load_events(raw)
+    except ValueError as exc:
+        print(f"error: could not parse events: {exc}", file=sys.stderr)
+        return 2
+    if not events:
+        print("warning: no events found in input — nothing to scan", file=sys.stderr)
     rules = _get_rules(args)
     findings = scan(events, rules)
     if args.format == "json":
@@ -165,7 +205,17 @@ def _cmd_scan(args) -> int:
 
 
 def _cmd_summary(args) -> int:
-    events = load_events(_read(args.events))
+    raw = _read(args.events)
+    if not raw.strip():
+        print("error: events file is empty", file=sys.stderr)
+        return 2
+    try:
+        events = load_events(raw)
+    except ValueError as exc:
+        print(f"error: could not parse events: {exc}", file=sys.stderr)
+        return 2
+    if not events:
+        print("warning: no events found in input — nothing to scan", file=sys.stderr)
     rules = _get_rules(args)
     findings = scan(events, rules)
     summary = summarize_findings(findings)
@@ -224,7 +274,16 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: Optional[List[str]] = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
-    return args.func(args)
+    try:
+        return args.func(args)
+    except SystemExit:
+        raise
+    except KeyboardInterrupt:
+        print("\ninterrupted", file=sys.stderr)
+        return 130
+    except Exception as exc:  # noqa: BLE001
+        print(f"error: unexpected failure: {exc}", file=sys.stderr)
+        return 1
 
 
 if __name__ == "__main__":
