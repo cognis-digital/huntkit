@@ -20,6 +20,75 @@ pip install cognis-sentrylog
 sentrylog scan .            # → prioritized findings in seconds
 ```
 
+
+<!-- cognis:example:start -->
+## 🔎 Example output
+
+Real, reproducible output from the tool — runs offline:
+
+```console
+$ sentrylog-emit --version
+sentrylog 1.0.0
+```
+
+```console
+$ sentrylog-emit --help
+usage: sentrylog [-h] [--version] [--format {table,json}]
+                 {scan,summary,rules,rule} ...
+
+Sigma-style detection engine over JSON/CSV logs (MITRE ATT&CK mapped).
+
+positional arguments:
+  {scan,summary,rules,rule}
+    scan                run rules against a log file
+    summary             rollup of findings by technique/level
+    rules               list bundled detection rules
+    rule                show one rule in detail
+
+options:
+  -h, --help            show this help message and exit
+  --version             show program's version number and exit
+  --format {table,json}
+                        output format (default: table)
+```
+
+```console
+$ sentrylog-emit rules
+28 rules loaded
+  [critical] cloud-aws-stoptrail      T1562.008    AWS CloudTrail Logging Stopped
+  [critical] cred-lsass-dump          T1003.001    LSASS Process Access Dump
+  [critical] cred-mimikatz            T1003.001    Mimikatz Credential Dumping Keywords
+  [critical] impact-vss-delete        T1490        Shadow Copy Deletion (Ransomware Precursor)
+  [high    ] cloud-aws-open-sg        T1562.007    AWS Security Group Opened to World
+  [high    ] cloud-aws-root           T1078.004    AWS Root Account Usage
+  [high    ] def-clear-eventlog       T1070.001    Clear Windows Event Logs
+  [high    ] def-disable-defender     T1562.001    Disable Windows Defender via Registry or PowerShell
+  [high    ] exec-office-child-shell  T1059.003    Office Application Spawning Shell
+  [high    ] exec-regsvr32-sct        T1218.010    Regsvr32 Squiblydoo
+  [high    ] exec-rundll32-js         T1218.011    Rundll32 Suspicious Execution
+  [high    ] ingress-certutil         T1140        Certutil Download or Decode
+  [high    ] linux-reverse-shell      T1059.004    Linux Reverse Shell One-Liner
+  [high    ] persist-net-localadmin   T1136.001    User Added to Local Administrators Group
+  [high    ] web-sqli                 T1190        Web SQL Injection Probe
+  [high    ] win-ps-download-cradle   T1059.001    PowerShell Download Cradle
+  [high    ] win-ps-encoded           T1059.001    Suspicious PowerShell Encoded Command
+  [medium  ] ingress-bitsadmin        T1197        BITSAdmin Download
+  [medium  ] lateral-psexec           T1569.002    PsExec Service Execution
+  [medium  ] lateral-wmic-process     T1047        WMI Process Creation Lateral Movement
+  [medium  ] linux-cron-persist       T1053.003    Linux Persistence via Cron
+  [medium  ] linux-sensitive-read     T1003.008    Linux Sensitive File Read
+  [medium  ] linux-ssh-bruteforce     T1110.001    SSH Brute Force Failed Logins
+  [medium  ] persist-new-service      T1543.003    New Service Installed via sc.exe
+  [medium  ] persist-run-key          T1547.001    Run Key Persistence via reg.exe
+  [medium  ] persist-schtasks         T1053.005    Scheduled Task Creation for Persistence
+  [medium  ] web-path-traversal       T1190        Web Path Traversal Attempt
+  [low     ] net-suspicious-port      T1571        Outbound Connection to Suspicious Port
+```
+
+> Blocks above are real `sentrylog` output — reproduce them from a clone.
+
+<!-- cognis:example:end -->
+
 ## Usage — step by step
 
 1. **Install** the CLI (console script `sentrylog`):

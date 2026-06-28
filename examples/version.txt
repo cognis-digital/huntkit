@@ -1,0 +1,3 @@
+$ sentrylog-emit --version
+
+sentrylog 1.0.0

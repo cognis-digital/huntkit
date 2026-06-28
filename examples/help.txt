@@ -1,0 +1,19 @@
+$ sentrylog-emit --help
+
+usage: sentrylog [-h] [--version] [--format {table,json}]
+                 {scan,summary,rules,rule} ...
+
+Sigma-style detection engine over JSON/CSV logs (MITRE ATT&CK mapped).
+
+positional arguments:
+  {scan,summary,rules,rule}
+    scan                run rules against a log file
+    summary             rollup of findings by technique/level
+    rules               list bundled detection rules
+    rule                show one rule in detail
+
+options:
+  -h, --help            show this help message and exit
+  --version             show program's version number and exit
+  --format {table,json}
+                        output format (default: table)
