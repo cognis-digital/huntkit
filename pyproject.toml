@@ -3,39 +3,44 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "cognis-sentrylog"
-version = "0.1.1"
-description = "Single-file SIEM for small teams — Sigma rules + multi-source ingest"
+name = "cognis-huntkit"
+version = "1.0.0"
+description = "Detection-engineering kit — IOCs, YARA, Sigma, Elastic, ATT&CK mapping, a growing rule library and a live-updatable blocklist. One command, offline."
 authors = [{name = "Cognis Digital", email = "suite@cognis.digital"}]
 license = {text = "LicenseRef-COCL-1.0"}
 requires-python = ">=3.10"
 readme = "README.md"
-keywords = ["blue-team", "cognis-digital", "cognis-neural-suite", "security"]
-classifiers = [
-    "Development Status :: 4 - Beta",
-    "License :: Other/Proprietary License",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-]
+keywords = ["detection-engineering", "detection-as-code", "sigma", "yara", "ioc", "threat-hunting", "mitre-attack", "blocklist", "siem", "security"]
+classifiers = ["Development Status :: 5 - Production/Stable", "License :: Other/Proprietary License", "Programming Language :: Python :: 3.10", "Programming Language :: Python :: 3.11", "Programming Language :: Python :: 3.12"]
 dependencies = []
 
 [project.optional-dependencies]
 connect = ["cognis-connect @ git+https://github.com/cognis-digital/cognis-connect.git"]
-mcp = ["mcp>=1.0"]
-web = ["fastapi>=0.110", "uvicorn>=0.27"]
 dev = ["pytest>=8.0"]
 
 [project.urls]
 Homepage = "https://cognis.digital"
-Repository = "https://github.com/cognis-digital/sentrylog"
+Repository = "https://github.com/cognis-digital/huntkit"
 
 [project.scripts]
-"sentrylog-emit" = "sentrylog.connect:emit_main"
+huntkit = "huntkit.suite:main"
 sentrylog = "sentrylog.cli:main"
+iocextract = "iocextract.cli:main"
+iocrep = "iocrep.cli:main"
+stixgen = "stixgen.cli:main"
+yararun = "yararun.cli:main"
+yaragen = "yaragen.cli:main"
+sigmacheck = "sigmacheck.cli:main"
+elastdetect = "elastdetect.cli:main"
+attackmap = "attackmap.cli:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["sentrylog"]
+packages = ['huntkit', 'sentrylog', 'iocextract', 'iocrep', 'stixgen', 'yararun', 'yaragen', 'sigmacheck', 'elastdetect', 'attackmap']
+artifacts = ["huntkit/rules/*.json", "huntkit/data/*"]
 
 [tool.hatch.metadata]
 allow-direct-references = true
+
+[tool.pytest.ini_options]
+testpaths = ["qa", "tests"]
+addopts = "--import-mode=importlib"

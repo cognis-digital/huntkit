@@ -1,0 +1,3 @@
+$ elastdetect --version
+
+elastdetect 0.1.0

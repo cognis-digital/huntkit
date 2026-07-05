@@ -1,0 +1,29 @@
+{
+  "rule_id": "cognis-demo-07-rdp-bruteforce",
+  "name": "RDP Brute Force From Single Source IP",
+  "description": "Identifies a high count of failed Remote Desktop (logon type 10) authentication events from a single source address within a short window, indicative of an RDP brute-force attempt against an internet-exposed host.",
+  "type": "threshold",
+  "language": "kuery",
+  "query": "event.category : \"authentication\" and event.outcome : \"failure\" and winlog.event_data.LogonType : \"10\"",
+  "threshold": {
+    "field": ["source.ip", "user.name"],
+    "value": 20
+  },
+  "risk_score": 64,
+  "severity": "high",
+  "tags": [
+    "Domain: Identity",
+    "Tactic: Credential Access",
+    "Technique: T1110.001",
+    "Use Case: Threat Detection"
+  ],
+  "references": [
+    "https://attack.mitre.org/techniques/T1110/001/"
+  ],
+  "false_positives": [
+    "A user repeatedly fat-fingering a password over RDP can trip a low threshold; jump hosts and vulnerability scanners can also generate bursts."
+  ],
+  "interval": "5m",
+  "from": "now-10m",
+  "enabled": true
+}

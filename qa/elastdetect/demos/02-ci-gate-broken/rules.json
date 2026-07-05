@@ -1,0 +1,45 @@
+[
+  {
+    "rule_id": "cognis-demo-02-bad-severity",
+    "name": "Mimikatz Module Load",
+    "description": "Detects a process loading a module name associated with credential-dumping tooling.",
+    "type": "query",
+    "language": "kuery",
+    "query": "dll.name : \"mimilib.dll\"",
+    "risk_score": 90,
+    "severity": "sev1",
+    "tags": ["Domain: Endpoint", "Tactic: Credential Access", "Technique: T1003"]
+  },
+  {
+    "rule_id": "cognis-demo-02-risk-out-of-range",
+    "name": "LSASS Memory Access By Unsigned Process",
+    "description": "Detects an unsigned process opening a handle to lsass.exe memory.",
+    "type": "eql",
+    "language": "eql",
+    "query": "process where event.type == \"start\" and process.name == \"lsass.exe\"",
+    "risk_score": 250,
+    "severity": "critical",
+    "tags": ["Domain: Endpoint", "Tactic: Credential Access", "Technique: T1003.001"]
+  },
+  {
+    "rule_id": "cognis-demo-02-missing-query",
+    "name": "DNS Query To Newly Registered Domain",
+    "description": "Detects DNS resolution of a domain registered within the last 24 hours.",
+    "type": "query",
+    "language": "kuery",
+    "risk_score": 35,
+    "severity": "low",
+    "tags": ["Domain: Network", "Tactic: Command and Control"]
+  },
+  {
+    "rule_id": "cognis-demo-02-threshold-no-object",
+    "name": "Excessive Outbound Connections From Workstation",
+    "description": "Identifies a host opening an abnormal number of outbound connections in a short window.",
+    "type": "threshold",
+    "language": "kuery",
+    "query": "event.category : \"network\" and network.direction : \"outbound\"",
+    "risk_score": 42,
+    "severity": "medium",
+    "tags": ["Domain: Network", "Tactic: Exfiltration"]
+  }
+]

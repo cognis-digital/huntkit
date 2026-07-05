@@ -1,0 +1,28 @@
+{
+  "rule_id": "cognis-0002-failed-logon-burst",
+  "name": "Burst of Failed Authentication From Single Source",
+  "description": "Identifies a high count of failed authentication events originating from a single source address within a short window, indicative of password spraying or brute-force activity.",
+  "type": "threshold",
+  "language": "kuery",
+  "query": "event.category : \"authentication\" and event.outcome : \"failure\"",
+  "threshold": {
+    "field": ["source.ip"],
+    "value": 25
+  },
+  "risk_score": 47,
+  "severity": "medium",
+  "tags": [
+    "Domain: Identity",
+    "Tactic: Credential Access",
+    "Technique: T1110"
+  ],
+  "references": [
+    "https://attack.mitre.org/techniques/T1110/"
+  ],
+  "false_positives": [
+    "Misconfigured service accounts can generate repeated authentication failures."
+  ],
+  "interval": "10m",
+  "from": "now-30m",
+  "enabled": true
+}

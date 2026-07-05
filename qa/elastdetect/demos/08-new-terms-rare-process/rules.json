@@ -1,0 +1,27 @@
+{
+  "rule_id": "cognis-demo-08-first-seen-admin-tool",
+  "name": "First Observed Remote Admin Tool On A Host",
+  "description": "Uses the new_terms rule type to alert the first time a known remote-administration or remote-access tool executable name is observed running on a given host over the lookback window. Useful for catching attacker-introduced RMM tooling.",
+  "type": "new_terms",
+  "language": "kuery",
+  "query": "event.category : \"process\" and process.name : (\"anydesk.exe\" or \"teamviewer.exe\" or \"psexec.exe\" or \"atera_agent.exe\" or \"screenconnect.clientservice.exe\")",
+  "new_terms_fields": ["host.name", "process.name"],
+  "history_window_start": "now-14d",
+  "risk_score": 53,
+  "severity": "medium",
+  "tags": [
+    "Domain: Endpoint",
+    "Tactic: Command and Control",
+    "Technique: T1219",
+    "Use Case: Threat Detection"
+  ],
+  "references": [
+    "https://attack.mitre.org/techniques/T1219/"
+  ],
+  "false_positives": [
+    "IT may legitimately deploy a new RMM tool fleet-wide; expect a burst of first-seen alerts during a sanctioned rollout."
+  ],
+  "interval": "1h",
+  "from": "now-65m",
+  "enabled": true
+}

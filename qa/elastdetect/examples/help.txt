@@ -1,0 +1,16 @@
+$ elastdetect --help
+
+usage: elastdetect [-h] [--version] {validate,diff,lint,deploy} ...
+
+Elastic detection-rule management CLI (validate / diff / lint / deploy).
+
+positional arguments:
+  {validate,diff,lint,deploy}
+    validate            validate rules (CI gate)
+    diff                diff two rule sets by rule_id
+    lint                style warnings (description/tags/references)
+    deploy              deploy rules to an Elastic cluster
+
+options:
+  -h, --help            show this help message and exit
+  --version             show program's version number and exit

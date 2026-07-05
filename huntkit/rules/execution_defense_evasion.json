@@ -1,0 +1,26 @@
+{
+  "category": "execution_defense_evasion",
+  "description": "Command-line execution and defense-evasion patterns over process/command telemetry.",
+  "signatures": [
+    {"id": "EXE001", "severity": "high", "attack": "T1059.001", "name": "Encoded PowerShell command",
+     "pattern": "(?i)powershell(\\.exe)?\\s+.*-e(nc(odedcommand)?)?\\s+[A-Za-z0-9+/=]{20,}"},
+    {"id": "EXE002", "severity": "high", "attack": "T1059.001", "name": "PowerShell download cradle",
+     "pattern": "(?i)(iex|invoke-expression)\\s*\\(?\\s*(new-object\\s+net\\.webclient|iwr|invoke-webrequest|downloadstring)"},
+    {"id": "EXE003", "severity": "medium", "attack": "T1059.001", "name": "PowerShell hidden/bypass window",
+     "pattern": "(?i)powershell(\\.exe)?\\s+.*(-w(indowstyle)?\\s+hidden|-ep\\s+bypass|-executionpolicy\\s+bypass|-nop\\b|-noni\\b)"},
+    {"id": "EXE004", "severity": "high", "attack": "T1218.011", "name": "rundll32 proxy execution",
+     "pattern": "(?i)rundll32(\\.exe)?\\s+.*(javascript:|\\.dll\\s*,\\s*\\w|url\\.dll,openurl)"},
+    {"id": "EXE005", "severity": "high", "attack": "T1218.010", "name": "regsvr32 scriptlet (squiblydoo)",
+     "pattern": "(?i)regsvr32(\\.exe)?\\s+.*(/i:https?://|scrobj\\.dll|/s\\s+/n\\s+/u)"},
+    {"id": "EXE006", "severity": "high", "attack": "T1562.001", "name": "Disable Windows Defender",
+     "pattern": "(?i)(set-mppreference\\s+-disable|add-mppreference\\s+-exclusion|sc\\s+(config|stop)\\s+windefend|net\\s+stop\\s+windefend)"},
+    {"id": "EXE007", "severity": "high", "attack": "T1070.001", "name": "Clear Windows event logs",
+     "pattern": "(?i)(wevtutil\\s+cl\\b|clear-eventlog|get-eventlog[^\\n]{0,40}-clear|wmic\\s+ntevent)"},
+    {"id": "EXE008", "severity": "medium", "attack": "T1070.003", "name": "Clear shell history (nix)",
+     "pattern": "(?i)(history\\s+-c|rm\\s+.{0,10}\\.bash_history|unset\\s+HISTFILE|export\\s+HISTFILESIZE=0)"},
+    {"id": "EXE009", "severity": "high", "attack": "T1059.004", "name": "Reverse shell one-liner (nix)",
+     "pattern": "(?i)(bash\\s+-i\\s*>&?\\s*/dev/tcp/|nc\\s+.{0,30}-e\\s+/bin/(ba)?sh|python[0-9]?\\s+-c\\s+.{0,60}socket|mkfifo\\s+.{0,20};.{0,20}sh\\s+-i)"},
+    {"id": "EXE010", "severity": "medium", "attack": "T1140", "name": "Base64 decode-then-execute (nix)",
+     "pattern": "(?i)(echo|printf)\\s+[A-Za-z0-9+/=]{16,}\\s*\\|\\s*base64\\s+-d\\s*\\|\\s*(ba)?sh"}
+  ]
+}

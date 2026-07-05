@@ -1,0 +1,11 @@
+# Mixed indicator set extracted from a triage queue.
+# Defanged notation is accepted (hxxp, [.], etc.).
+hxxp://evil-c2[.]example/beacon.exe
+185.220.101.45
+44d88612fea8a8f36de82e1278abb02f
+secure-login-update.account-verify.xn--frd-l50a.tk
+8.8.8.8
+github.com
+http://10.0.0.5/internal/report.pdf
+a1b9f3c7d2e4081624537890abcdef1234567890abcdef1234567890abcdef12
+phish-update.example

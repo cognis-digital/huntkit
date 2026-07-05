@@ -1,0 +1,27 @@
+[
+  {
+    "rule_id": "cognis-demo-05-valid-deployable",
+    "name": "Service Created Pointing At A Script Interpreter",
+    "description": "Detects a new Windows service whose binary path invokes a script interpreter, a common service-persistence technique.",
+    "type": "query",
+    "language": "kuery",
+    "query": "event.action : \"service-installed\" and winlog.event_data.ImagePath : (\"*cmd.exe*\" or \"*powershell.exe*\" or \"*cscript.exe*\")",
+    "risk_score": 62,
+    "severity": "high",
+    "tags": ["Domain: Endpoint", "Tactic: Persistence", "Technique: T1543.003"],
+    "references": ["https://attack.mitre.org/techniques/T1543/003/"],
+    "false_positives": ["Some legitimate management agents register script-based services."],
+    "enabled": true
+  },
+  {
+    "rule_id": "cognis-demo-05-invalid-skipped",
+    "name": "Broken Rule That Should Be Skipped",
+    "description": "This rule has an invalid severity and must never be deployed.",
+    "type": "query",
+    "language": "kuery",
+    "query": "process.name : \"net.exe\"",
+    "risk_score": 30,
+    "severity": "informational",
+    "tags": ["Domain: Endpoint"]
+  }
+]

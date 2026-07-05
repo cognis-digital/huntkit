@@ -1,0 +1,37 @@
+[
+  {
+    "rule_id": "cognis-demo-06-good",
+    "name": "Net Use To Administrative Share",
+    "description": "Detects net.exe mapping a remote administrative share (C$, ADMIN$), often used for lateral movement.",
+    "type": "query",
+    "language": "kuery",
+    "query": "process.name : \"net.exe\" and process.args : (\"use\" and (\"*\\\\C$*\" or \"*\\\\ADMIN$*\"))",
+    "risk_score": 50,
+    "severity": "medium",
+    "tags": ["Domain: Endpoint", "Tactic: Lateral Movement", "Technique: T1021.002"],
+    "references": ["https://attack.mitre.org/techniques/T1021/002/"],
+    "false_positives": ["Administrators routinely map admin shares for maintenance."]
+  },
+  {
+    "rule_id": "cognis-demo-06-bad-type",
+    "name": "Registry Run Key Persistence",
+    "description": "Detects creation of a Run/RunOnce autostart registry value.",
+    "type": "correlation",
+    "language": "kuery",
+    "query": "registry.path : \"*\\\\CurrentVersion\\\\Run\\\\*\"",
+    "risk_score": 48,
+    "severity": "medium",
+    "tags": ["Domain: Endpoint", "Tactic: Persistence", "Technique: T1547.001"]
+  },
+  {
+    "rule_id": "cognis-demo-06-bad-risk",
+    "name": "Clearing Of Windows Event Logs",
+    "description": "Detects wevtutil clearing event logs to destroy evidence.",
+    "type": "query",
+    "language": "kuery",
+    "query": "process.name : \"wevtutil.exe\" and process.args : \"cl\"",
+    "risk_score": -5,
+    "severity": "high",
+    "tags": ["Domain: Endpoint", "Tactic: Defense Evasion", "Technique: T1070.001"]
+  }
+]

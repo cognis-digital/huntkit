@@ -1,0 +1,26 @@
+{
+  "rule_id": "cognis-0001-encoded-powershell",
+  "name": "Encoded PowerShell Command Execution",
+  "description": "Detects PowerShell invoked with an encoded command argument, a common technique used to obfuscate malicious payloads and bypass logging.",
+  "type": "query",
+  "language": "kuery",
+  "query": "process.name : \"powershell.exe\" and process.args : (\"-enc\" or \"-EncodedCommand\" or \"-e\")",
+  "risk_score": 73,
+  "severity": "high",
+  "tags": [
+    "Domain: Endpoint",
+    "Tactic: Defense Evasion",
+    "Technique: T1027",
+    "Technique: T1059.001"
+  ],
+  "references": [
+    "https://attack.mitre.org/techniques/T1059/001/",
+    "https://attack.mitre.org/techniques/T1027/"
+  ],
+  "false_positives": [
+    "Some administrative or deployment scripts legitimately use encoded commands."
+  ],
+  "interval": "5m",
+  "from": "now-9m",
+  "enabled": true
+}

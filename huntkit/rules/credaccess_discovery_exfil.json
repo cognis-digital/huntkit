@@ -1,0 +1,76 @@
+{
+  "category": "credaccess_discovery_exfil",
+  "description": "Credential-access, discovery, and exfiltration patterns over command/log telemetry.",
+  "signatures": [
+    {
+      "id": "CRD001",
+      "severity": "critical",
+      "attack": "T1003.001",
+      "name": "LSASS dump",
+      "pattern": "(?i)(procdump.{0,20}lsass|comsvcs\\.dll.{0,20}minidump|rundll32.{0,30}lsass|mimikatz|sekurlsa::)"
+    },
+    {
+      "id": "CRD002",
+      "severity": "critical",
+      "attack": "T1003.002",
+      "name": "SAM/SYSTEM hive theft",
+      "pattern": "(?i)(reg\\s+save\\s+.*hklm.{0,2}(sam|system|security)\\b|esentutl.{0,20}(sam|ntds))"
+    },
+    {
+      "id": "CRD003",
+      "severity": "high",
+      "attack": "T1003.008",
+      "name": "Read /etc/shadow (nix)",
+      "pattern": "(?i)(cat|cp|less|strings)\\s+/etc/shadow\\b"
+    },
+    {
+      "id": "CRD004",
+      "severity": "high",
+      "attack": "T1552.001",
+      "name": "Search for credentials in files",
+      "pattern": "(?i)(findstr\\s+/si\\s+pass|grep\\s+-r(i)?\\s+.{0,15}(password|passwd|api[_-]?key|secret)|select-string\\s+.{0,15}password)"
+    },
+    {
+      "id": "DIS001",
+      "severity": "low",
+      "attack": "T1087",
+      "name": "Account/domain enumeration",
+      "pattern": "(?i)\\b(whoami\\s+/all|net\\s+(user|group|localgroup)\\b|id\\b.{0,5}$|net\\s+accounts|dsquery\\b)"
+    },
+    {
+      "id": "DIS002",
+      "severity": "low",
+      "attack": "T1018",
+      "name": "Remote system discovery",
+      "pattern": "(?i)\\b(net\\s+view\\b|arp\\s+-a\\b|nltest\\s+/dclist|for\\s+/l\\s+.{0,20}ping)"
+    },
+    {
+      "id": "DIS003",
+      "severity": "medium",
+      "attack": "T1046",
+      "name": "Network service scanning",
+      "pattern": "(?i)\\b(nmap\\s+-|masscan\\s+|for\\s+/l.{0,30}telnet|test-netconnection.{0,30}-port)"
+    },
+    {
+      "id": "EXF001",
+      "severity": "high",
+      "attack": "T1048",
+      "name": "Data POST to external host",
+      "pattern": "(?i)(curl|wget|invoke-restmethod|invoke-webrequest)\\s+.{0,60}(-d|--data|-method\\s+post|-infile|-t\\s).{0,60}https?://"
+    },
+    {
+      "id": "EXF002",
+      "severity": "high",
+      "attack": "T1071.004",
+      "name": "DNS tunneling / exfil",
+      "pattern": "(?i)(nslookup\\s+.{0,40}\\.(oast|burpcollaborator|interact\\.sh|requestbin)|dnscat|iodine\\b)"
+    },
+    {
+      "id": "EXF003",
+      "severity": "medium",
+      "attack": "T1560.001",
+      "name": "Stage collected data into an archive",
+      "pattern": "(?i)(rar\\s+a\\s+-hp|7z\\s+a\\s+-p|tar\\s+.{0,10}czf\\s+.{0,30}(/tmp|%temp%)|makecab)"
+    }
+  ]
+}

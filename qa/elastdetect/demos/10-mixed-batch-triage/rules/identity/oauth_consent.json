@@ -1,0 +1,28 @@
+[
+  {
+    "rule_id": "cognis-demo-10-illicit-consent",
+    "name": "OAuth Application Granted High-Privilege Consent",
+    "description": "Identifies an OAuth application being granted high-privilege delegated permissions, a hallmark of illicit consent grant (application impersonation) attacks against cloud identity.",
+    "type": "query",
+    "language": "kuery",
+    "query": "event.dataset : \"o365.audit\" and event.action : \"Consent to application.\" and o365.audit.ModifiedProperties.ConsentAction.Value : \"*Scope: *Mail.Read*\"",
+    "risk_score": 70,
+    "severity": "high",
+    "tags": ["Domain: Cloud", "Tactic: Persistence", "Technique: T1098.003"],
+    "references": ["https://attack.mitre.org/techniques/T1098/003/"],
+    "false_positives": ["Sanctioned application onboarding will generate consent events."],
+    "enabled": true
+  },
+  {
+    "rule_id": "cognis-demo-10-bad-mfa-rule",
+    "name": "MFA Fatigue Push Bombing",
+    "description": "Repeated MFA push challenges to a single user in a short window.",
+    "type": "threshold",
+    "language": "kuery",
+    "query": "event.action : \"mfa_challenge\" and event.outcome : \"failure\"",
+    "threshold": {"field": ["user.name"], "value": 0},
+    "risk_score": 55,
+    "severity": "high",
+    "tags": ["Domain: Identity", "Tactic: Credential Access", "Technique: T1621"]
+  }
+]

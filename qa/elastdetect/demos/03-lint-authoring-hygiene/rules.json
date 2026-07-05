@@ -1,0 +1,24 @@
+[
+  {
+    "rule_id": "cognis-demo-03-undocumented",
+    "name": "Rundll32 Loading From Public Folder",
+    "type": "query",
+    "language": "kuery",
+    "query": "process.name : \"rundll32.exe\" and process.args : \"*\\\\Users\\\\Public\\\\*\"",
+    "risk_score": 55,
+    "severity": "medium"
+  },
+  {
+    "rule_id": "cognis-demo-03-shortname",
+    "name": "Bad",
+    "description": "Detects certutil.exe used to download a remote file, a living-off-the-land technique for staging payloads.",
+    "type": "query",
+    "language": "kuery",
+    "query": "process.name : \"certutil.exe\" and process.args : (\"-urlcache\" or \"-verifyctl\")",
+    "risk_score": 60,
+    "severity": "medium",
+    "tags": ["Domain: Endpoint", "Tactic: Command and Control", "Technique: T1105"],
+    "references": ["https://attack.mitre.org/techniques/T1105/"],
+    "false_positives": ["Certificate management scripts may use certutil legitimately."]
+  }
+]

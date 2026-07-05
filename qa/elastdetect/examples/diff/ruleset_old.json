@@ -1,0 +1,33 @@
+[
+  {
+    "rule_id": "cognis-0001-encoded-powershell",
+    "name": "Encoded PowerShell Command Execution",
+    "type": "query",
+    "language": "kuery",
+    "query": "process.name : \"powershell.exe\" and process.args : (\"-enc\" or \"-e\")",
+    "risk_score": 65,
+    "severity": "medium",
+    "tags": ["Domain: Endpoint", "Tactic: Defense Evasion"]
+  },
+  {
+    "rule_id": "cognis-0002-failed-logon-burst",
+    "name": "Burst of Failed Authentication From Single Source",
+    "type": "threshold",
+    "language": "kuery",
+    "query": "event.category : \"authentication\" and event.outcome : \"failure\"",
+    "threshold": {"field": ["source.ip"], "value": 50},
+    "risk_score": 47,
+    "severity": "medium",
+    "tags": ["Domain: Identity", "Tactic: Credential Access"]
+  },
+  {
+    "rule_id": "cognis-0009-deprecated-rule",
+    "name": "Deprecated Legacy Heuristic",
+    "type": "query",
+    "language": "kuery",
+    "query": "event.action : \"legacy\"",
+    "risk_score": 21,
+    "severity": "low",
+    "tags": ["Domain: Endpoint"]
+  }
+]

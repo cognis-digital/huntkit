@@ -1,0 +1,13 @@
+{
+  "blocklist": {
+    "185.220.101.45": {"category": "tor-exit", "weight": 55, "source": "internal-feed", "note": "repeated brute-force against VPN"},
+    "evil-c2.example": {"category": "c2", "weight": 95, "source": "incident-2026-0142", "note": "Cobalt Strike beacon host"},
+    "44d88612fea8a8f36de82e1278abb02f": {"category": "malware", "weight": 90, "source": "av-quarantine", "note": "EICAR-style test sample"},
+    "phish-update.example": "phishing"
+  },
+  "allowlist": [
+    "microsoft.com",
+    "8.8.8.8",
+    "github.com"
+  ]
+}

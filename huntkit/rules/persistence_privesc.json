@@ -1,0 +1,76 @@
+{
+  "category": "persistence_privesc",
+  "description": "Persistence and privilege-escalation patterns over command/registry/config telemetry.",
+  "signatures": [
+    {
+      "id": "PER001",
+      "severity": "high",
+      "attack": "T1547.001",
+      "name": "Registry Run-key persistence",
+      "pattern": "(?i)reg\\s+add\\s+.*(currentversion.{0,4}run\\b|\\brunonce\\b)"
+    },
+    {
+      "id": "PER002",
+      "severity": "high",
+      "attack": "T1053.005",
+      "name": "Scheduled task creation",
+      "pattern": "(?i)(schtasks\\s+/create|register-scheduledtask)\\b.*(/sc\\s+(onlogon|onstart|minute)|-trigger)"
+    },
+    {
+      "id": "PER003",
+      "severity": "medium",
+      "attack": "T1053.003",
+      "name": "Cron persistence (nix)",
+      "pattern": "(?i)(crontab\\s+-|/etc/cron\\.(d|daily|hourly)/|>>\\s*/var/spool/cron)"
+    },
+    {
+      "id": "PER004",
+      "severity": "high",
+      "attack": "T1543.002",
+      "name": "systemd service persistence",
+      "pattern": "(?i)(/etc/systemd/system/.{1,40}\\.service|systemctl\\s+enable\\b).*"
+    },
+    {
+      "id": "PER005",
+      "severity": "medium",
+      "attack": "T1546.004",
+      "name": "Shell rc-file persistence (nix)",
+      "pattern": "(?i)>>\\s*~?/?(\\.bashrc|\\.bash_profile|\\.zshrc|\\.profile|/etc/profile)\\b"
+    },
+    {
+      "id": "PER006",
+      "severity": "high",
+      "attack": "T1543.003",
+      "name": "Windows service install",
+      "pattern": "(?i)(sc\\s+create\\s+\\w+.*binpath|new-service\\s+-name)"
+    },
+    {
+      "id": "PER007",
+      "severity": "high",
+      "attack": "T1548.003",
+      "name": "sudoers tampering (nix)",
+      "pattern": "(?i)(echo\\s+.{0,40}\\s*>>\\s*/etc/sudoers|visudo|nopasswd:\\s*all)"
+    },
+    {
+      "id": "PER008",
+      "severity": "medium",
+      "attack": "T1136.001",
+      "name": "Local account creation",
+      "pattern": "(?i)(net\\s+user\\s+\\w+\\s+.+/add|useradd\\s+.{0,40}(-o\\s+-u\\s+0|-g\\s+root)|adduser\\s+.{0,20}sudo)"
+    },
+    {
+      "id": "PER009",
+      "severity": "high",
+      "attack": "T1098",
+      "name": "Add account to admin/root group",
+      "pattern": "(?i)(net\\s+localgroup\\s+administrators\\s+\\w+\\s+/add|usermod\\s+-ag\\s+(sudo|root|wheel))"
+    },
+    {
+      "id": "PER010",
+      "severity": "medium",
+      "attack": "T1037",
+      "name": "SSH authorized_keys implant",
+      "pattern": "(?i)(echo\\s+.{0,60}ssh-(rsa|ed25519)\\s+.{0,40}>>\\s*.{0,20}authorized_keys)"
+    }
+  ]
+}

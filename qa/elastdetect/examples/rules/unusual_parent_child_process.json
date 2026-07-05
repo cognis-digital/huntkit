@@ -1,0 +1,25 @@
+{
+  "rule_id": "cognis-0003-office-spawns-shell",
+  "name": "Office Application Spawning a Command Shell",
+  "description": "Detects an Office productivity application spawning a command interpreter, a behavior frequently associated with malicious document macros.",
+  "type": "eql",
+  "language": "eql",
+  "query": "process where event.type == \"start\" and process.parent.name in (\"winword.exe\", \"excel.exe\", \"powerpnt.exe\") and process.name in (\"cmd.exe\", \"powershell.exe\", \"wscript.exe\")",
+  "risk_score": 68,
+  "severity": "high",
+  "tags": [
+    "Domain: Endpoint",
+    "Tactic: Execution",
+    "Technique: T1059",
+    "Technique: T1204.002"
+  ],
+  "references": [
+    "https://attack.mitre.org/techniques/T1204/002/"
+  ],
+  "false_positives": [
+    "Some add-ins and automation tools legitimately launch scripts from Office."
+  ],
+  "interval": "5m",
+  "from": "now-9m",
+  "enabled": true
+}

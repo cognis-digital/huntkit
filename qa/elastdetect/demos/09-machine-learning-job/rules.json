@@ -1,0 +1,36 @@
+[
+  {
+    "rule_id": "cognis-demo-09-ml-rare-process",
+    "name": "Anomalous Process For The Host",
+    "description": "Machine-learning rule that alerts when the anomaly job detects a process that is rare for the host, based on the prebuilt host-anomaly job.",
+    "type": "machine_learning",
+    "machine_learning_job_id": "v3_rare_process_by_host_windows_ecs",
+    "anomaly_threshold": 50,
+    "risk_score": 45,
+    "severity": "low",
+    "tags": [
+      "Domain: Endpoint",
+      "Use Case: Threat Detection",
+      "Rule Type: Machine Learning"
+    ],
+    "references": [
+      "https://www.elastic.co/guide/en/security/current/prebuilt-ml-jobs.html"
+    ],
+    "false_positives": [
+      "Legitimate but infrequent administrative tools will surface as anomalies until the job has learned them."
+    ],
+    "interval": "15m",
+    "from": "now-45m",
+    "enabled": true
+  },
+  {
+    "rule_id": "cognis-demo-09-ml-missing-job",
+    "name": "Broken ML Rule With No Job Id",
+    "description": "A machine_learning rule that omits its job id and must fail validation.",
+    "type": "machine_learning",
+    "anomaly_threshold": 75,
+    "risk_score": 60,
+    "severity": "medium",
+    "tags": ["Rule Type: Machine Learning"]
+  }
+]

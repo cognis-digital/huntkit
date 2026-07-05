@@ -1,0 +1,50 @@
+[
+  {
+    "rule_id": "cognis-demo-01-wmic-shadowcopy",
+    "name": "WMIC Shadow Copy Deletion",
+    "description": "Detects use of wmic.exe to delete volume shadow copies, a precursor commonly observed before ransomware encryption to prevent recovery.",
+    "type": "eql",
+    "language": "eql",
+    "query": "process where event.type == \"start\" and process.name == \"wmic.exe\" and process.args : \"shadowcopy\" and process.args : \"delete\"",
+    "risk_score": 73,
+    "severity": "high",
+    "tags": [
+      "Domain: Endpoint",
+      "Tactic: Impact",
+      "Technique: T1490"
+    ],
+    "references": [
+      "https://attack.mitre.org/techniques/T1490/"
+    ],
+    "false_positives": [
+      "Backup software occasionally prunes shadow copies during scheduled maintenance."
+    ],
+    "interval": "5m",
+    "from": "now-9m",
+    "enabled": true
+  },
+  {
+    "rule_id": "cognis-demo-01-suspicious-scheduled-task",
+    "name": "Scheduled Task Created From User Writable Path",
+    "description": "Identifies schtasks.exe creating a task whose action points at a user-writable directory such as the temp or downloads folder, a frequent persistence technique.",
+    "type": "query",
+    "language": "kuery",
+    "query": "process.name : \"schtasks.exe\" and process.args : \"/create\" and process.args : (\"*\\\\Temp\\\\*\" or \"*\\\\Downloads\\\\*\")",
+    "risk_score": 58,
+    "severity": "medium",
+    "tags": [
+      "Domain: Endpoint",
+      "Tactic: Persistence",
+      "Technique: T1053.005"
+    ],
+    "references": [
+      "https://attack.mitre.org/techniques/T1053/005/"
+    ],
+    "false_positives": [
+      "Some installers stage tasks from a temp directory during setup."
+    ],
+    "interval": "10m",
+    "from": "now-15m",
+    "enabled": true
+  }
+]
